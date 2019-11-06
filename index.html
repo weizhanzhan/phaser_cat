@@ -1,0 +1,137 @@
+<!DOCTYPE html> 
+<head> 
+	<meta charset="UTF-8" />
+	<title>exam5</title>
+    <script src="../phaser.min.js"></script>
+</head>
+<body>
+
+<script>
+
+var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+var player
+var cursors
+var timer
+var pipes
+var platforms
+var count = 0
+var xx
+var boxs
+var speed = -70
+function preload() {
+    game.load.image('sky', 'assets/sky.png');
+    game.load.image('ground', 'assets/platform.png');
+    game.load.image('star', 'assets/star.png');
+    game.load.spritesheet('dude', 'assets/dude.png', 32, 48); //加载小人 宽高
+    game.load.image('pipe', 'assets/pipe.png');    
+
+    game.load.image('cat_normal','assets/game_cat.png',10,10)
+    game.load.image('cat_king','assets/game_king.png',10,10)
+    game.load.image('game_boom','assets/game_boom.png',10,10)
+}
+function create() {
+   
+
+
+    game.physics.startSystem(Phaser.Physics.ARCADE)//开启物理引擎
+    game.add.sprite(0,0,'sky')
+
+ //   pipes = game.add.group();
+  //  pipes.enableBody = true //组的物理引擎
+  //  pipes.createMultiple(100, 'pipe'); 
+    boxs = game.add.group();
+    boxs.enableBody = true //组的物理引擎
+    timer = game.time.events.loop(500,function(){
+        var i  =Math.ceil(Math.random()*1000000000%3);
+        if(i===1){
+          
+            var xx1 = boxs.create(0,0,'cat_normal')
+           
+        //   var pipe = pipes.getFirstDead();//开启小人物理引擎
+            game.physics.arcade.enable(xx1) //开启小人物理引擎
+        
+            xx1.reset(800, 200);
+            xx1.body.immovable = true
+            xx1.body.velocity.x =speed; 
+            xx1.outOfBoundsKill = true;
+        }else if( i === 2){
+            var xx2 =  boxs.create(0,0,'cat_king')
+        //   var pipe = pipes.getFirstDead();//开启小人物理引擎
+            game.physics.arcade.enable(xx2) //开启小人物理引擎
+        
+            xx2.reset(800, 200);
+            xx2.body.immovable = true
+            xx2.body.velocity.x =speed
+            xx2.outOfBoundsKill = true;
+        }else{
+            var xx3 =  boxs.create(0,0,'game_boom')
+        //   var pipe = pipes.getFirstDead();//开启小人物理引擎
+            game.physics.arcade.enable(xx3) //开启小人物理引擎
+        
+            xx3.reset(800, 200);
+            xx3.body.immovable = true
+            xx3.body.velocity.x = speed
+            xx3.outOfBoundsKill = true;
+        }
+     
+    }); 
+
+    platforms = game.add.group() //创建一个组  把每一个ground 放里面 一起出来 碰撞等属性
+    platforms.enableBody = true //组的物理引擎
+
+   // var ledge = platforms.create(400,400,'ground')
+  //  ledge.body.immovable = true //防止地面被小人压下去  保证自己不动
+    //ledge = platforms.create(-150,250,'ground')
+    //ledge.body.immovable = true //防止地面被小人压下去  保证自己不动
+
+    var ground = platforms.create(0,game.world.height-64,'ground')//游戏区域的高度
+  
+    
+    ground.scale.setTo(2,2)
+   // game.physics.arcade.enable(ground) //开启底部物理引擎
+    ground.body.immovable = true //防止地面被小人压下去  保证自己不动
+
+    player = game.add.sprite(32,game.world.height-150,'dude')
+
+    game.physics.arcade.enable(player) //开启小人物理引擎
+
+    player.body.gravity.y = 1800;//开启重力
+    player.body.collideWorldBounds = true ; //开启重力后会掉出去 这句是为了不掉出去
+
+    //这里是定义动画 update执行动画
+    player.animations.add('left',[0,1,2,3],10,true) //动画 left 是方向  帧的的动画 0，1，2，3贞的动画 true是一直循环执行
+    player.animations.add('right',[5,6,7,8],10,true) //动画 right 是方向  帧的的动画 5,6,7,8贞的动画 true是一直循环执行
+    
+    cursors = game.input.keyboard.createCursorKeys()
+  //  game.add.sprite(0,0,'star')
+}
+function update() {
+    game.physics.arcade.collide(player, platforms);//碰撞检测
+    game.physics.arcade.collide(player, boxs,function(player,pipe){
+        console.log(pipe.key)
+        pipe.kill()
+    },null,this);//碰撞检测
+    game.physics.arcade.overlap(player, pipes,function(player,pipe){
+        console.log(pipe)
+        pipe.kill()
+    },null,this);//碰撞检测
+    if(cursors.left.isDown){
+        player.body.velocity.x = -750; //点击左键 左移动的速度
+        player.animations.play('left') //执行动画
+    }else if(cursors.right.isDown){
+        player.body.velocity.x = 750; //点击右键 右移动的速度
+        player.animations.play('right')
+    }else{
+        player.body.velocity.x = 0;
+        player.frame = 4; //不动的时候 动画停在第四帧
+    }
+    if(cursors.up.isDown && player.body.touching.down){ //后面的判断是为了不让小人连续跳  让他接触到地面之后才能跳
+         player.body.velocity.y = -900; //点击上键 上移动的速度
+    }
+   // if(cursors.down.isDown){
+     //   player.body.gravity.y = 1700;
+    //}
+}
+</script>
+
+</body>

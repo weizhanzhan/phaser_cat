@@ -1,0 +1,25 @@
+ {# game.physics.startSystem(Phaser.Physics.ARCADE);//开启游戏物理引擎
+
+
+    game.add.sprite(0, 0, 'sky');
+    platforms = game.add.group();
+    platforms.enableBody = true;
+    var ground = platforms.create(0, game.world.height - 64, 'ground');
+    ground.scale.setTo(2, 2);
+    ground.body.immovable = true; // 不会动
+    var ledge = platforms.create(400, 400, 'ground');
+    ledge.body.immovable = true;
+    ledge = platforms.create(-150, 250, 'ground');
+    ledge.body.immovable = true;
+    
+
+
+    player = game.add.sprite(32, game.world.height - 150, 'dude'); //添加小人
+    game.physics.arcade.enable(player);//开启小人物理引擎
+
+    player.body.bounce.y = 0.2; 
+    player.body.gravity.y = 300;//重力
+    player.body.collideWorldBounds = true;//设置了这个就不会掉出屏幕外去
+
+    player.animations.add('left', [0, 1, 2, 3], 10, true);
+    player.animations.add('right', [5, 6, 7, 8], 10, true); #}
